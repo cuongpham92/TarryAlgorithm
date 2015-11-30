@@ -1,10 +1,13 @@
 package algorithm.protocol;
 
+import algorithm.resource.NodeConfiguration;
+
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
  * Created by cuongpham on 11/25/15.
+ * This class describes the ring topology
  */
 public class Topology {
     //ring topology
@@ -20,8 +23,8 @@ public class Topology {
         return minimumPort;
     }
 
-    public Set<Integer> neighbors(int id) {
-        Set<Integer> neighbors = new TreeSet<>();
+    public Set<NodeConfiguration> neighbors(int id) {
+        Set<NodeConfiguration> neighbors = new TreeSet<>();
         if (id == minimumPort) {
             neighbors.add(id + 1);
             neighbors.add(minimumPort + N - 1);

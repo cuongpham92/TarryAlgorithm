@@ -14,14 +14,20 @@ import java.util.*;
 
 /**
  * Created by cuongpham on 11/28/15.
+ * This class contains Stenning protocol.
  */
 public class StenningProtocol<T> {
 
+    private int myPort;
     private DatagramSocket unicastSocket;
     private Map<Integer, StenningSendingCondition> sendingconditions;
     private Map<Integer, StenningReceivingCondition> receivingconditions;
-    private int myPort;
 
+
+    /**
+     * Constructor of StenningProtocol class
+     * @param myPort    The port that this process is using for sending and receiving UDP messages
+     */
     public StenningProtocol(int myPort) {
         try {
             this.myPort = myPort;
@@ -35,6 +41,13 @@ public class StenningProtocol<T> {
 
     }
 
+    /**
+     * This function takes the message and the destination (defined by ipAddress and port) from Tarry algorithm's layer
+     * and do the reliable send
+     * @param message       the TarryMessage
+     * @param ipAddress     the ipAddress of the sender
+     * @param port          the port of the sender
+     */
     public void send(T message, InetAddress ipAddress, int port) {
         if (unicastSocket != null) {
             while (true) {
@@ -84,6 +97,11 @@ public class StenningProtocol<T> {
         }
     }
 
+    /**
+     * This function will receive the packet from network and send the ack back to the sender
+     * to inform that the message has been delivered probably
+     * @return  a Map contains two information: the sender's Tarry message and the sender's address
+     */
     public Map<String, Object> receive() {
         try {
             byte[] receiveData = new byte[1024];
@@ -113,6 +131,9 @@ public class StenningProtocol<T> {
         return null;
     }
 
+    /**
+     * This function will close the UPD connection when the algorithm terminates
+     */
     public void close() {
         UDPProtocol.close(unicastSocket);
     }

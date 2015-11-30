@@ -21,6 +21,5 @@ public class TarryStenningAlgorithm {
         node2.start();
         node3.start();
         node4.start();
-
     }
 }

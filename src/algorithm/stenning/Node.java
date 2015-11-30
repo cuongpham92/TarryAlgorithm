@@ -46,7 +46,7 @@ public class Node extends Thread {
             while (true) {
                 if (myPort == topology.getMinimumPort() && ok) {
                     System.out.println("Process1: sending " + next + "th message");
-                    UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("message", "message" + next, next), InetAddress.getByName(myIPAddress), myPort + 1);
+                    UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("message", "message" + next, next), (myIPAddress), myPort + 1);
                     ok = false;
                 }
                 try {

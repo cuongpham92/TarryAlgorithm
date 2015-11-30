@@ -2,6 +2,9 @@ package algorithm.resource;
 
 /**
  * Created by cuongpham on 11/30/15.
+ * This class contains a node's information, including:
+ * - its ip address
+ * - its UDP listening port
  */
 public class NodeConfiguration {
     private String myIPAddress;

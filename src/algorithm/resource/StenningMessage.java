@@ -4,6 +4,14 @@ import java.io.Serializable;
 
 /**
  * Created by cuongpham on 11/28/15.
+ * This class describes Stenning wrapper message, each will include:
+ * - type of the message (incomming or ack message)
+ * - index of the message (according to stenning algorithm)
+ * - the main content
+ *
+ * This wrapper is used for other algorithms (e.g., Tarry algorithm) to
+ * - put their messages in here and make Stenning do the reliable sending
+ * - Stenning will receive the message from the network and deliver the ack message to the sender
  */
 public class StenningMessage<T> implements Serializable {
     private String type;

@@ -10,9 +10,15 @@ import java.net.InetAddress;
 
 /**
  * Created by cuongpham on 11/25/15.
+ * This class implements functions of the UDP protocol
  */
 public class UDPProtocol {
 
+    /**
+     * This function will create the UDP connection
+     * @param unicastSocket     the socket will be used for sending and receiving packets
+     * @param port              the port a process will use for sending and receving packets
+     */
     public static void connection(DatagramSocket unicastSocket, int port) {
         try {
             unicastSocket = new DatagramSocket(port);
@@ -21,13 +27,19 @@ public class UDPProtocol {
         }
     }
 
-    public static void sendUnicastString(DatagramSocket unicastSocket, String message, int port) {
+    /**
+     * This function is used for sending a string from a process to another (unicast sending)
+     * @param unicastSocket
+     * @param message
+     * @param ipAddress
+     * @param port
+     */
+    public static void sendUnicastString(DatagramSocket unicastSocket, String message, String ipAddress, int port) {
         if (unicastSocket != null) {
             try {
-                InetAddress address = InetAddress.getByName("localhost");
                 byte[] buf = new byte[256];
                 buf = message.getBytes();
-                DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
+                DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(ipAddress), port);
                 unicastSocket.send(packet);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -36,6 +48,11 @@ public class UDPProtocol {
 
     }
 
+    /**
+     * This function is used for receiving a packet from network
+     * @param unicastSocket
+     * @return the received packet
+     */
     public static DatagramPacket receiveUnicast(DatagramSocket unicastSocket) {
         try {
             byte[] receiveData = new byte[1024];
@@ -48,20 +65,31 @@ public class UDPProtocol {
         return null;
     }
 
-    public static void sendUnicastObject(DatagramSocket unicastSocket, Object obj, InetAddress inetAddress, int port) {
+    /**
+     * This function is used for sending an object from a process to another (unicast sending)
+     * @param unicastSocket
+     * @param obj
+     * @param ipAddress
+     * @param port
+     */
+    public static void sendUnicastObject(DatagramSocket unicastSocket, Object obj, String ipAddress, int port) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(obj);
             oos.flush();
             byte[] sendData = baos.toByteArray();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, inetAddress, port);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(ipAddress), port);
             unicastSocket.send(sendPacket);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
+    /**
+     * This function is used for closing the UDP connection
+     * @param unicastSocket
+     */
     public static void close(DatagramSocket unicastSocket) {
         if (unicastSocket != null) {
             try {
