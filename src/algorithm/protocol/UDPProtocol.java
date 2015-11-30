@@ -48,14 +48,14 @@ public class UDPProtocol {
         return null;
     }
 
-    public static void sendUnicastObject(DatagramSocket unicastSocket, Object obj, InetAddress ipAddress, int port) {
+    public static void sendUnicastObject(DatagramSocket unicastSocket, Object obj, InetAddress inetAddress, int port) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(obj);
             oos.flush();
             byte[] sendData = baos.toByteArray();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, inetAddress, port);
             unicastSocket.send(sendPacket);
         } catch (Exception ex) {
             ex.printStackTrace();

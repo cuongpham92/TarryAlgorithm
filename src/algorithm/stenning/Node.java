@@ -2,12 +2,14 @@ package algorithm.stenning;
 
 import algorithm.protocol.Topology;
 import algorithm.protocol.UDPProtocol;
+import algorithm.resource.TarryMessage;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.Set;
 import java.util.TreeSet;
@@ -16,11 +18,11 @@ import java.util.TreeSet;
  * Created by cuongpham on 11/25/15. It is the implementation for Stenning algorithm
  */
 public class Node extends Thread {
+    private  String myIPAddress;
+    private int myPort;
     protected DatagramSocket unicastSocket = null;
     Set<String> listNodes = new TreeSet<String>();
-    private int myPort;
     private static Topology topology;
-    private int numOfMessage;
     private int next;
     private boolean ok;
 
@@ -29,12 +31,11 @@ public class Node extends Thread {
     }
 
     //process's name is initialized as its port
-    public Node(String name) throws IOException {
-        super(name);
-        myPort = Integer.parseInt(name);
+    public Node(String myIPAddress, int myPort) throws IOException {
+        this.myIPAddress = myIPAddress;
+        this.myPort = myPort;
         unicastSocket = new DatagramSocket(myPort);
         unicastSocket.setSoTimeout(2000);
-        numOfMessage = 10;
         next = 1;
         ok = true;
     }
@@ -45,7 +46,7 @@ public class Node extends Thread {
             while (true) {
                 if (myPort == topology.getMinimumPort() && ok) {
                     System.out.println("Process1: sending " + next + "th message");
-                    UDPProtocol.sendUnicastObject(unicastSocket, new Message("message", "message" + next, next), myPort + 1);
+                    UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("message", "message" + next, next), InetAddress.getByName(myIPAddress), myPort + 1);
                     ok = false;
                 }
                 try {
@@ -54,7 +55,7 @@ public class Node extends Thread {
                     unicastSocket.receive(receivePacket);
                     ByteArrayInputStream bais = new ByteArrayInputStream(receiveData);
                     ObjectInputStream ois = new ObjectInputStream(bais);
-                    Message message = (Message) ois.readObject();
+                    TarryMessage message = (TarryMessage) ois.readObject();
                     if (message.getType().equals("ack")) {
                         if (next == message.getIndex()) {
                             ok = true;
@@ -63,13 +64,13 @@ public class Node extends Thread {
                     }
 
                     if (message.getType().equals("message")) {
-                        /*if (message.getIndex() == next) {
+                        if (message.getIndex() == next) {
                             System.out.println("Process2: Deliever message: " + message.getContent());
-                            UDPProtocol.sendUnicastObject(unicastSocket, new Message("ack", "", next), receivePacket.getPort());
+                            UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("ack", "", next), InetAddress.getByName(myIPAddress), receivePacket.getPort());
                             next++;
                         } else {
-                            UDPProtocol.sendUnicastObject(unicastSocket, new Message("ack", "", next - 1), receivePacket.getPort());
-                        }*/
+                            UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("ack", "", next - 1), InetAddress.getByName(myIPAddress), receivePacket.getPort());
+                        }
                         System.out.println("Process2: receives message");
                     }
 
@@ -77,7 +78,7 @@ public class Node extends Thread {
                 } catch (SocketTimeoutException e) {
                     //System.out.print("");
                     //System.out.println("Process1: no response after 2s, sending again the " + next + "th message");
-                    UDPProtocol.sendUnicastObject(unicastSocket, new Message("message", "message" + next, next), myPort + 1);
+                    UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("message", "message" + next, next), InetAddress.getByName(myIPAddress), myPort + 1);
                 }
             }
             UDPProtocol.close(unicastSocket);

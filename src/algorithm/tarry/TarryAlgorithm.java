@@ -10,12 +10,12 @@ import java.io.IOException;
 public class TarryAlgorithm {
     public static void main(String[] args) throws IOException {
         Topology topology = new Topology(4445, 4);
-        Node.setTopology(topology);
+        NodeTarry.setTopology(topology);
 
-        Node node1 = new Node("4445");
-        Node node2 = new Node("4446");
-        Node node3 = new Node("4447");
-        Node node4 = new Node("4448");
+        NodeTarry node1 = new NodeTarry("localhost", 4445);
+        NodeTarry node2 = new NodeTarry("localhost", 4446);
+        NodeTarry node3 = new NodeTarry("localhost", 4447);
+        NodeTarry node4 = new NodeTarry("localhost", 4448);
 
         node1.start();
         node2.start();

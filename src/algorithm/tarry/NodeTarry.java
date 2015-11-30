@@ -9,13 +9,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.*;
 
 /**
  * Created by cuongpham on 11/25/15. It is the implementation for Tarry algorithm with ring topology
  */
-public class Node extends Thread{
+public class NodeTarry extends Thread{
     protected DatagramSocket unicastSocket = null;
+    private String myIPAddress;
     private int myPort;
     private static Topology topology;
     private int parent = 0;
@@ -24,13 +26,13 @@ public class Node extends Thread{
     private Set<Integer> listVisited = new HashSet<Integer>();
 
     public static void setTopology(Topology topology) {
-        Node.topology = topology;
+        NodeTarry.topology = topology;
     }
 
     //process's name is initialized as its port
-    public Node(String name) throws IOException {
-        super(name);
-        myPort = Integer.parseInt(name);
+    public NodeTarry(String myIPAddress, int myPort) throws IOException {
+        this.myIPAddress = myIPAddress;
+        this.myPort = myPort;
         unicastSocket = new DatagramSocket(myPort);
         listNeighbors = topology.neighbors(myPort);
     }
@@ -40,7 +42,7 @@ public class Node extends Thread{
         try{
             if (myPort == topology.getMinimumPort()) {
                 parent = myPort;
-                UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("GO", ""), myPort + 1);
+                UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("GO", ""), InetAddress.getByName(myIPAddress), myPort + 1);
             }
 
             while (true) {
@@ -58,16 +60,16 @@ public class Node extends Thread{
                         System.out.println("Process" + myPort + " has parent " + parent);
 
                         if(listVisited.size() == listNeighbors.size()) {
-                            UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("BACK", "yes"), parent);
+                            UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("BACK", "yes"), InetAddress.getByName(myIPAddress), parent);
                         } else {
                             int sendingPort = myPort + 1;
                             if (myPort == (topology.getMinimumPort() + topology.getN() - 1)) {
                                 sendingPort = topology.getMinimumPort();
                             }
-                            UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("GO", ""), sendingPort);
+                            UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("GO", ""), InetAddress.getByName(myIPAddress), sendingPort);
                         }
                     } else {
-                        UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("BACK", "no"), receivePacket.getPort());
+                        UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("BACK", "no"), InetAddress.getByName(myIPAddress), receivePacket.getPort());
                     }
                 }
                 if(message.getType().equalsIgnoreCase("BACK")) {
@@ -81,7 +83,7 @@ public class Node extends Thread{
                         System.out.println(i);
                     }
                     if (parent != myPort) {
-                        UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("BACK", "yes"), parent);
+                        UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("BACK", "yes"), InetAddress.getByName(myIPAddress), parent);
                     }
                     System.out.println("Process" + myPort + " is done");
                     break;

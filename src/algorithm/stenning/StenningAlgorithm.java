@@ -11,10 +11,10 @@ import java.io.IOException;
 public class StenningAlgorithm {
     public static void main(String[] args) throws IOException {
         Topology topology = new Topology(4445, 2);
-        algorithm.stenning.Node.setTopology(topology);
+        Node.setTopology(topology);
 
-        algorithm.stenning.Node node1 = new algorithm.stenning.Node("4445");
-        algorithm.stenning.Node node2 = new algorithm.stenning.Node("4446");
+        Node node1 = new Node("localhost", 4445);
+        Node node2 = new Node("localhost", 4446);
 
         node1.start();
         node2.start();

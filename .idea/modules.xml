@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TarryStenning.iml" filepath="$PROJECT_DIR$/TarryStenning.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TarryAlgorithm.iml" filepath="$PROJECT_DIR$/TarryAlgorithm.iml" />
     </modules>
   </component>
 </project>

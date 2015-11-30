@@ -21,7 +21,7 @@ import java.util.TreeMap;
  */
 public class NodeTarryStenning extends Thread {
     private StenningProtocol stenningProtocol;
-    private InetAddress ipAddress;
+    private String myIPAddress;
     private int myPort;
     private static Topology topology;
     private int parent = 0;
@@ -34,10 +34,9 @@ public class NodeTarryStenning extends Thread {
     }
 
     //process's name is initialized as its port
-    public NodeTarryStenning(String name, String address) throws IOException {
-        super(name);
-        myPort = Integer.parseInt(name);
-        ipAddress = InetAddress.getByName(address);
+    public NodeTarryStenning(String myIPAddress , int myPort) throws IOException {
+        this.myIPAddress = myIPAddress;
+        this.myPort = myPort;
         stenningProtocol = new StenningProtocol(myPort);
         listNeighbors = topology.neighbors(myPort);
     }
@@ -47,8 +46,7 @@ public class NodeTarryStenning extends Thread {
         try {
             if (myPort == topology.getMinimumPort()) {
                 parent = myPort;
-                //UDPProtocol.sendUnicastObject(unicastSocket, new TarryMessage("GO", ""), myPort + 1);
-                stenningProtocol.send(new TarryMessage("GO", ""), myPort + 1);
+                stenningProtocol.send(new TarryMessage("GO", ""), InetAddress.getByName(myIPAddress) ,myPort + 1);
             }
 
             while (true) {
@@ -64,16 +62,16 @@ public class NodeTarryStenning extends Thread {
                             System.out.println("Process" + myPort + " has parent " + parent);
 
                             if (listVisited.size() == listNeighbors.size()) {
-                                stenningProtocol.send(new TarryMessage("BACK", "yes"), parent);
+                                stenningProtocol.send(new TarryMessage("BACK", "yes"), InetAddress.getByName(myIPAddress), parent);
                             } else {
                                 int sendingPort = myPort + 1;
                                 if (myPort == (topology.getMinimumPort() + topology.getN() - 1)) {
                                     sendingPort = topology.getMinimumPort();
                                 }
-                                stenningProtocol.send(new TarryMessage("GO", ""), sendingPort);
+                                stenningProtocol.send(new TarryMessage("GO", ""), InetAddress.getByName(myIPAddress), sendingPort);
                             }
                         } else {
-                            stenningProtocol.send(new TarryMessage("BACK", "no"), port);
+                            stenningProtocol.send(new TarryMessage("BACK", "no"), InetAddress.getByName(myIPAddress), port);
                         }
                     }
                     if (message.getType().equalsIgnoreCase("BACK")) {
@@ -87,7 +85,7 @@ public class NodeTarryStenning extends Thread {
                             System.out.println(i);
                         }
                         if (parent != myPort) {
-                            stenningProtocol.send(new TarryMessage("BACK", "yes"), parent);
+                            stenningProtocol.send(new TarryMessage("BACK", "yes"), InetAddress.getByName(myIPAddress), parent);
                         }
                         System.out.println("Process" + myPort + " is done");
                         break;
